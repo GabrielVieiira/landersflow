@@ -1,0 +1,26 @@
+graph TD
+    subgraph Sub2_1 [Fase de Desenvolvimento]
+        D1[Receber Briefing e Copy] --> D2[Desenvolvimento HTML/CSS/JS]
+        D2 --> D3[Otimização de Performance e Mídia]
+    end
+
+    subgraph Sub2_2 [Decisão de Camuflagem]
+        D3 --> E1{Qual o Cloaker?}
+    end
+
+    subgraph Sub2_3 [Caminho TWR: GitHub Pages]
+        E1 -- TWR --> T1[Criar Repositório/Pasta no GitHub]
+        T1 --> T2[Upload dos Arquivos via Git/API]
+        T2 --> T3[Habilitar GitHub Pages]
+        T3 --> T4[Ajustar Cloudflare: CNAME para github.io]
+    end
+
+    subgraph Sub2_4 [Caminho JCI: Hospedainfo]
+        E1 -- JCI --> J1[Preparar Diretório na Hospedainfo]
+        J1 --> J2[Upload via FTP/Painel/API]
+        J2 --> J3[Obter IP do Servidor]
+        J3 --> J4[Ajustar Cloudflare: Registro A + Proxy Ativo]
+    end
+
+    T4 --> F1[Validação de URL Final]
+    J4 --> F1

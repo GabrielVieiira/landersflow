@@ -1,0 +1,117 @@
+graph TD
+
+    subgraph DOM_1 ["1. Aquisição: Dynadot"]
+        A1["Verificar Disponibilidade do Domínio"] --> A2["Executar Ordem de Compra via API"]
+        A2 --> A3["Configurar WHOIS Privacy & Auto-Renewal"]
+        A3 --> A4["Aguardar Confirmação de Registro"]
+    end
+
+    subgraph DOM_2 ["2. Conectividade: Cloudflare"]
+        B1["Criar Zone no Cloudflare via API"] --> B2["Capturar Nameservers da Zone"]
+        B2 --> B3["Atualizar Nameservers na Dynadot"]
+        B3 --> B4["Aguardar Propagação de DNS"]
+    end
+
+    subgraph DOM_3 ["3. Apontamento DNS: GitHub Pages"]
+        C1["Limpar Registros DNS Padrão"] --> C2["Criar Registros tipo 'A' para os IPs do GitHub"]
+        C2 --> C3["Criar Registro 'CNAME' www apontando para github.io"]
+        C3 --> C4["Configurar Nível de SSL/TLS - Full/Strict"]
+        C4 --> C5["Habilitar Proxy Cloudflare - Nuvem Laranja"]
+    end
+
+    subgraph DOM_4 ["4. Estruturação: Repositório Central"]
+        D1["Criar Repositório no GitHub com nome do domínio ex: exemplo.com"] --> D2["Adicionar arquivo 'CNAME' na raiz do repo"]
+        D2 --> D3["Configurar Custom Domain no painel do GitHub Pages"]
+    end
+
+    DOM_1 --> DOM_2
+    DOM_2 --> DOM_3
+    DOM_3 --> DOM_4
+
+    DOM_4 --> L_A
+
+    subgraph LAN_1 ["5. O Pedido da Lander - O que o Operador Informa"]
+        direction TB
+        L_A(["Início: Escolha do Modelo"]) --> L_B{"Qual o tipo de Oferta?"}
+        
+        L_B -- ClickBank --> L_C["Inputs CB:<br>1. Template do index<br>2. Template da offer section<br>3. Produto<br>4. Script Vturb e Minutagem<br>5. Headline<br>6. Nicho"]
+        L_B -- Genérica/Nativa --> L_D["Inputs Genéricos:<br>1. Template do index<br>2. Template da offer section<br>3. Produto<br>4. Script Vturb e Minutagem<br>5. Headline<br>6. Nicho"]
+    end
+
+    subgraph LAN_2 ["6. Consulta ao Banco de Dados da Lander"]
+        direction TB
+        L_C --> L_E[("Consulta o produto CB:<br>Cores, Imagens, Vendor e Links de Checkout")]
+        L_D --> L_F[("Consulta o produto Genérico:<br>Cores e Imagens")]
+    end
+
+    subgraph LAN_3 ["7. A Montagem - Pintando o Esqueleto"]
+        direction TB
+        L_E --> L_G1["Sistema preenche: Cores, Nome, Headline, Script Vturb e Minutagem"]
+        L_F --> L_G2["Sistema preenche: Cores, Nome, Headline, Script Vturb e Minutagem"]
+        
+        L_G1 --> L_H["Sistema insere os Links de Checkout nos botões e vendor da ClickBank"]
+        L_G2 --> L_I["Pronto! O Template Genérico já possui o Rastreio do RT e botões configurados nativamente"]
+    end
+
+    subgraph LAN_4 ["8. Revisão e Colocação no Ar"]
+        direction TB
+        L_H & L_I --> L_J["Sistema gera o Link de Teste Temporário"]
+        L_J --> L_K{"QA: Visual e Textos aprovados?"}
+        
+        L_K -- Reprovado: Voltar para Ajuste --> L_A
+        L_K -- Aprovado --> L_L["Sistema publica a página oficialmente no GitHub Pages"]
+    end
+
+    subgraph LAN_5 ["9. Rastreio Inteligente - RedTrack"]
+        direction TB
+        L_L --> L_M{"Quais as configurações da lander no RedTrack?"}
+        
+        L_M -- ClickBank --> L_N["nome = Nome da lander <br>URL = Url da pagina + affiliate + tid + aff_sub1<br>Tracking domain = dominio onde a pagina esta hospedada<br>Listicle = Falso"]
+        L_M -- Genérica --> L_O["nome = Nome da lander <br>URL = Url da pagina<br>Tracking domain = dominio onde a pagina esta hospedada<br>Listicle = Verdadeiro"]
+        
+        L_N & L_O --> L_P((("Lander Cadastrada e Link Gerado")))
+    end
+
+    L_P --> C_A
+
+    subgraph CAM_1 ["10. O Pedido da Campanha - Inputs"]
+        direction TB
+        C_A["Inputs do Usuário:<br>1. Nome da Campanha<br>2. Nome do Traffic Channel<br>3. Código da Lander<br>4. Código da Pre-Lander -opcional-<br>5. Nome do Produto"]
+    end
+
+    subgraph CAM_2 ["11. Validação e Auto-Criação de Canal"]
+        direction TB
+        C_A --> C_B{"Traffic Channel já existe?"}
+        C_B -- Não --> C_C[["Função: createTrafficChannel"]]
+        C_B -- Sim --> C_D["Obter ID do Traffic Channel Existente"]
+        C_C --> C_D
+    end
+
+    subgraph CAM_3 ["12. Consulta ao Banco de Dados da Campanha"]
+        direction TB
+        C_D --> C_E[("Banco de Dados Central")]
+        
+        C_E -.-> |Código da Lander| C_F["Identifica:<br>1. Domínio da Hospedagem<br>2. Se é ClickBank ou Genérica"]
+        C_E -.-> |Origem do Canal| C_G["Busca no Banco:<br>Configuração de S2S Postback de acordo<br>com a Plataforma do Traffic Chanel"]
+    end
+
+    subgraph CAM_4 ["13. Regras de Cadastro de Ofertas"]
+        direction TB
+        C_F --> C_H{"Tipo de Oferta?"}
+        
+        C_H -- ClickBank --> C_I["Prepara 1 Oferta:<br>nome_produto-clickbank"]
+        C_H -- Demais/Genéricas --> C_J["Prepara 3 Ofertas na Ordem:<br>1. 2botles -> 2. 6botles -> 3. 3botles"]
+    end
+
+    subgraph CAM_5 ["14. Configuração Final e Ativação"]
+        direction TB
+        C_I & C_J --> C_K["Regra: Domínio da Campanha = Domínio da Lander"]
+        C_K --> C_L["Vincular Postback S2S e Pre-Lander se houver"]
+        C_L --> C_M["API RedTrack: Criar Campanha Oficial"]
+    end
+
+    C_M --> C_N((("Link Final para ser cadastrado no Cloaker")))
+
+    class L_E,L_F,C_E db;
+    class C_C,C_M api;
+    class D1,D2,D3,L_L git;

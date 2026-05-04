@@ -1,0 +1,63 @@
+[tool.poetry]
+name = "landersflow"
+version = "0.1.0"
+description = "Sistema de automação para criação e deploy de Landing Pages via GitHub Pages com integração RedTrack"
+authors = ["LandersFlow Team"]
+readme = "README.md"
+packages = [{ include = "backend" }, { include = "frontend" }]
+
+[tool.poetry.dependencies]
+python = ">=3.11,<3.14"
+
+# --- FastAPI & ASGI ---
+fastapi = "^0.115.0"
+uvicorn = { version = "^0.30.0", extras = ["standard"] }
+python-multipart = "^0.0.9"
+
+# --- Streamlit ---
+streamlit = "^1.38.0"
+requests = "^2.32.0"   # Streamlit usa sync; httpx para o backend
+
+# --- Banco de Dados ---
+sqlmodel = "^0.0.21"
+aiosqlite = "^0.20.0"
+
+# --- HTTP Assíncrono ---
+httpx = "^0.27.0"
+
+# --- GitHub ---
+PyGithub = "^2.3.0"
+
+# --- Templates ---
+jinja2 = "^3.1.4"
+markupsafe = "^2.1.5"
+
+# --- Configuração & Segurança ---
+pydantic-settings = "^2.4.0"
+python-dotenv = "^1.0.1"
+
+[tool.poetry.group.dev.dependencies]
+pytest = "^8.3.0"
+pytest-asyncio = "^0.24.0"
+pytest-mock = "^3.14.0"
+httpx = "^0.27.0"
+respx = "^0.21.0"
+ruff = "^0.6.0"
+mypy = "^1.11.0"
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+# Smoke tests requerem credenciais reais — excluídos do pytest automático.
+# Execute manualmente: poetry run python tests/smoke/test_ssh_smoke.py
+norecursedirs = ["tests/smoke"]
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
